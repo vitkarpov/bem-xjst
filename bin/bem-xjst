@@ -35,6 +35,17 @@ require('coa').Cmd()
         .short('e').long('engine')
         .def('bemhtml')
         .end()
+    .opt()
+        .name('sourcemap').title('Generate source map (default: false)')
+        .short('s').long('sourcemap')
+        .def(false)
+        .flag()
+        .end()
+    .opt()
+        .name('sourceroot').title('sourceRoot for source map (default: undefined)')
+        .short('r').long('sourceroot')
+        .def(undefined)
+        .end()
     .act(function(options) {
       var input = [],
       deferred = q.defer();
@@ -51,7 +62,11 @@ require('coa').Cmd()
 
       function finish(source) {
         var out = bem_xjst[options.engine].generate(source, {
-          'no-opt': options['no-opt']
+            'no-opt': options['no-opt'],
+            from: options.input.path,
+            to: options.output.path,
+            sourceMap: options.sourceMap,
+            sourceRoot: options.sourceRoot
         });
 
         options.output.write(out);
